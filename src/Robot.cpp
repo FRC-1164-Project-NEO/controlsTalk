@@ -12,13 +12,16 @@
 
 class Robot: public frc::IterativeRobot {
 public:
+
+	static std::shared_ptr<Drive> drive = std::make_shared<Drive>();
+	static std::shared_ptr<Joystick> joystick = std::make_shared<Joystick>(0);
+
+
 	void RobotInit() {
 		chooser.AddDefault(autoNameDefault, autoNameDefault);
 		chooser.AddObject(autoNameCustom, autoNameCustom);
 		frc::SmartDashboard::PutData("Auto Modes", &chooser);
 
-		x = new Joystick(0);
-		drive = new Drive();
 	}
 
 	/*
@@ -57,7 +60,7 @@ public:
 	}
 
 	void TeleopPeriodic() {
-		drive->setRight(x->GetY());
+		//drive->setRight(x->GetY());
 	}
 
 	void TestPeriodic() {
@@ -70,9 +73,6 @@ private:
 	const std::string autoNameDefault = "Default";
 	const std::string autoNameCustom = "My Auto";
 	std::string autoSelected;
-
-	Drive *drive;
-	Joystick *x;
 };
 
 START_ROBOT_CLASS(Robot)

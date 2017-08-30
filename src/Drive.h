@@ -2,19 +2,36 @@
 #define Drive_H
 
 #include <VictorSP.h>
+#include <Encoder.h>
 #include <Commands/Subsystem.h>
 
 class Drive : public Subsystem {
 private:
-	// It's desirable that everything possible under private except
-	// for methods that implement subsystem capabilities
+	// Drive motors
 	VictorSP *r1;
 	VictorSP *r2;
 	VictorSP *r3;
 
+	VictorSP *l1;
+	VictorSP *l2;
+	VictorSP *l3;
+
+	// Encoder inputs
+	Encoder *lEnc;
+	Encoder *rEnc;
+
 public:
 	Drive();
+
+	void set(double left, double right);
+
+	void setLeft(double value);
 	void setRight(double value);
+
+	void resetEnc();
+	double getLeft();
+	double getRight();
+
 	void InitDefaultCommand();
 };
 
