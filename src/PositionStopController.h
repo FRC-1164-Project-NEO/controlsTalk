@@ -3,9 +3,9 @@
 
 #include <Commands/Command.h>
 
-class TimeBasedController : public frc::Command {
+class PositionStopController : public frc::Command {
 public:
-	TimeBasedController();
+	PositionStopController();
 	void Initialize();
 	void Execute();
 	bool IsFinished();
@@ -13,8 +13,7 @@ public:
 	void Interrupted();
     
 private:
-    int iterationsToRun;
-    int curIteration;
+    double distanceToGo;
     double motorPower;
 };
 

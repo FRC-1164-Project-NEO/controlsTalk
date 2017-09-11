@@ -48,10 +48,10 @@ void Drive::resetEnc() {
 	lEnc->Reset();
 	rEnc->Reset();
 }
-double Drive::getLeft() {
+double Drive::getLeftEnc() {
 	return lEnc->Get();
 }
-double Drive::getRight() {
+double Drive::getRightEnc() {
 	return rEnc->Get();
 }
 

@@ -29,8 +29,8 @@ public:
 	void setRight(double value);
 
 	void resetEnc();
-	double getLeft();
-	double getRight();
+	double getLeftEnc();
+	double getRightEnc();
 
 	void InitDefaultCommand();
 };
