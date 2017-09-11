@@ -1,11 +1,11 @@
 #include "TimeBasedController.h"
-#include "Robot.h"
+//#include "Robot.h"
 
 
-TimeBasedController::TimeBasedController() {
+TimeBasedController::TimeBasedController(Drive *Drive) {
 	// Use Requires() here to declare subsystem dependencies
 	// eg. Requires(Robot::chassis.get());
-	Requires(Robot::drive.get());
+	drive = Drive;
 }
 
 // Called just before this Command runs the first time

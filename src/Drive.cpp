@@ -1,20 +1,20 @@
 #include "Drive.h"
 #include <Preferences.h>
 
-const int r1PWM = 0;
-const int r2PWM = 0;
-const int r3PWM = 0;
 
 Drive::Drive() : Subsystem("Drive") {
 	Preferences *pref = Preferences::GetInstance();
 
 	r1 = new VictorSP(pref->GetInt("driveR1", 0));
+	//r1 = new VictorSP(7);
 	r2 = new VictorSP(pref->GetInt("driveR2", 1));
 	r3 = new VictorSP(pref->GetInt("driveR3", 2));
 
 	l1 = new VictorSP(pref->GetInt("driveL1", 3));
 	l2 = new VictorSP(pref->GetInt("driveL2", 4));
 	l3 = new VictorSP(pref->GetInt("driveL3", 5));
+
+	rEnc = new Encoder(pref->GetInt("rightEncA", 0), pref->GetInt("rightEncB", 1));
 }
 
 
@@ -45,7 +45,8 @@ void Drive::setRight(double value) {
 
 
 void Drive::resetEnc() {
-	lEnc->Reset();
+	// left encoder not currently used
+	//lEnc->Reset();
 	rEnc->Reset();
 }
 double Drive::getLeftEnc() {

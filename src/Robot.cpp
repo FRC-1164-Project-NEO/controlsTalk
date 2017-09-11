@@ -1,13 +1,28 @@
 #include "Robot.h"
+#include "TimeBasedController.h"
+#include <cstdlib>
+#include <Preferences.h>
 
-std::shared_ptr<Drive> Robot::drive = std::make_shared<Drive>();
-std::shared_ptr<Joystick> Robot::joystick = std::make_shared<Joystick>(0);
+
 
 void Robot::RobotInit() {
 	chooser.AddDefault(autoNameDefault, autoNameDefault);
 	chooser.AddObject(autoNameCustom, autoNameCustom);
 	frc::SmartDashboard::PutData("Auto Modes", &chooser);
 
+	// init sub-systems
+	drive = new Drive();
+	joystick = new Joystick(0);
+
+
+	// init commands
+	frc::SmartDashboard::PutData("timeBasedController", new TimeBasedController(drive));
+}
+
+void Robot::RobotPeriodic() {
+	if (joystick->GetRawButton(Preferences::GetInstance()->GetInt("EncResetButton",1))) {
+		drive->resetEnc();
+	}
 }
 
 /*
@@ -46,7 +61,13 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-	//drive->setRight(x->GetY());
+	drive->set(-joystick->GetY(), -joystick->GetThrottle());
+
+	// This is done because the smart dashboard only updates when a new value is given to it.
+	// Giving small varying number added to actual number.
+	double smallRandomNumber = (rand() % 500) / 4000.0;
+	double encoderValue = drive->getRight() + smallRandomNumber;
+	frc::SmartDashboard::PutNumber("EncoderPosition", encoderValue);
 }
 
 void Robot::TestPeriodic() {
@@ -54,3 +75,5 @@ void Robot::TestPeriodic() {
 }
 
 START_ROBOT_CLASS(Robot)
+
+

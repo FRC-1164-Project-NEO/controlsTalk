@@ -22,12 +22,14 @@
 
 class Robot: public frc::IterativeRobot {
 public:
+	Drive *drive;
+	Joystick *joystick;
 
-	static std::shared_ptr<Drive> drive;
-	static std::shared_ptr<Joystick> joystick;
+
 
 
 	void RobotInit();
+	void RobotPeriodic();
 	void AutonomousInit() override;
 	void AutonomousPeriodic();
 	void TeleopInit();
