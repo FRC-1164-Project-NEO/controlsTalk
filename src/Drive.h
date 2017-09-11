@@ -19,6 +19,8 @@ private:
 	// Encoder inputs
 	Encoder *lEnc;
 	Encoder *rEnc;
+    
+    double countsPerDegree;
 
 public:
 	Drive();

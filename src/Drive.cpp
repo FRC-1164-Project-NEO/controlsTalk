@@ -15,6 +15,8 @@ Drive::Drive() : Subsystem("Drive") {
 	l3 = new VictorSP(pref->GetInt("driveL3", 5));
 
 	rEnc = new Encoder(pref->GetInt("rightEncA", 0), pref->GetInt("rightEncB", 1));
+    
+    countsPerDegree = pref->GetInt("encCountsPerRev", 1) * 360;
 }
 
 
@@ -50,10 +52,10 @@ void Drive::resetEnc() {
 	rEnc->Reset();
 }
 double Drive::getLeftEnc() {
-	return lEnc->Get();
+	return lEnc->Get() / countsPerDegree;
 }
 double Drive::getRightEnc() {
-	return rEnc->Get();
+	return rEnc->Get() / countsPerDegree;
 }
 
 
