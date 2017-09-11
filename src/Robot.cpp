@@ -1,5 +1,10 @@
 #include "Robot.h"
+
 #include "TimeBasedController.h"
+#include "PositionStopController.h"
+#include "PController.h"
+#include "PIDController.h"
+
 #include <cstdlib>
 #include <Preferences.h>
 
