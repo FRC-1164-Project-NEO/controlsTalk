@@ -1,5 +1,17 @@
+// PositionStopController    Written Ian Rankin September 2017
+//
+// This controller is a niave feedback controller
+// It simply moves towards the setpoint at a static speed
+// until it reaches the setpoint then it stops.
+//
+// For more info see the notes page:
+//
+// Constants used:
+// posBasedSpeed - the motor speed to move towards controller
+// distanceToGo - distanceToGo
+
+
 #include "TimeBasedController.h"
-#include "Robot.h"
 
 
 PositionStopController::PositionStopController() {
@@ -25,13 +37,13 @@ void PositionStopController::Execute() {
 
 // Make this return true when this Command no longer needs to run execute()
 bool PositionStopController::IsFinished() {
-    // stop once a certian amount of time has passed.
+    // stop once a certian distance has been moved
     return drive->getRightEnc() >= distanceToGo;
 }
 
 // Called once after isFinished returns true
 void PositionStopController::End() {
-    // stop the motor
+    // stop the motor once done.
     drive->set(0,0);
 }
 

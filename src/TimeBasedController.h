@@ -1,3 +1,16 @@
+// TimeBasedController   Written Ian Rankin September 2017
+//
+// This is a niave controller that moves at a constant speed
+// towards the setpoint for a certian amount of time then stops
+// the controller is not robust
+//
+// For more info see the notes page:
+//
+// Constants used:
+// timeBasedSpeed - the motor speed to move towards setpoint
+// timeToRunSec - the time the controller runs for
+
+
 #ifndef TimeBasedController_H
 #define TimeBasedController_H
 

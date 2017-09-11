@@ -20,7 +20,10 @@ Drive::Drive() : Subsystem("Drive") {
 }
 
 
-//
+// set
+// This function sets the speed for the drive.
+// @param left - the speed of the left side in range [-1, 1]
+// @param right - the speed of the right side in range [-1, 1]
 void Drive::set(double left, double right) {
 	setLeft(left);
 	setRight(right);
@@ -45,12 +48,14 @@ void Drive::setRight(double value) {
 }
 
 
-
+// resets the encoder
 void Drive::resetEnc() {
 	// left encoder not currently used
 	//lEnc->Reset();
 	rEnc->Reset();
 }
+
+// Read drive encoders
 double Drive::getLeftEnc() {
 	return lEnc->Get() / countsPerDegree;
 }

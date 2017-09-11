@@ -1,16 +1,24 @@
+// TimeBasedController   Written Ian Rankin September 2017
+//
+// This is a niave controller that moves at a constant speed
+// towards the setpoint for a certian amount of time then stops
+// the controller is not robust
+//
+// For more info see the notes page:
+
 #include "TimeBasedController.h"
-//#include "Robot.h"
 
 
 TimeBasedController::TimeBasedController(Drive *Drive) {
-	// Use Requires() here to declare subsystem dependencies
-	// eg. Requires(Robot::chassis.get());
+	// set drive for the controller
 	drive = Drive;
 }
 
 // Called just before this Command runs the first time
 void TimeBasedController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
+    
+    // set speed to run the controller at.
     motorPower = pref->GetDouble("timeBasedSpeed", 0)
     
     // block runs every 20ms, 1/20ms = 50Hz
@@ -34,7 +42,7 @@ bool TimeBasedController::IsFinished() {
 
 // Called once after isFinished returns true
 void TimeBasedController::End() {
-    // stop the motor
+    // stop the motor once done.
     drive->set(0,0);
 }
 
