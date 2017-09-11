@@ -16,8 +16,13 @@ public:
 private:
     Drive *drive;
     
+    double intergral;
+    double lastError;
+    
     double distanceToGo;
-    double motorPower;
+    double kp;
+    double ki;
+    double kd;
 };
 
 #endif  // TimeBasedController_H

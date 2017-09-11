@@ -17,7 +17,7 @@ private:
     Drive *drive;
     
     double distanceToGo;
-    double motorPower;
+    double kp;
 };
 
 #endif  // TimeBasedController_H

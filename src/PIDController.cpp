@@ -2,31 +2,50 @@
 #include "Robot.h"
 
 
-PositionStopController::PositionStopController() {
-	// Use Requires() here to declare subsystem dependencies
-	// eg. Requires(Robot::chassis.get());
-	Requires(Robot::drive.get());
+PositionStopController::PositionStopController(Drive *Drive) {
+	// Find
+    drive = Drive;
 }
 
 // Called just before this Command runs the first time
 void PositionStopController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
-    motorPower = pref->GetDouble("posBasedSpeed", 0)
     
-    // block runs every 20ms, 1/20ms = 50Hz
+    // Get the constants for the PID Controller
+    kp = pref->GetDouble("Kp", 0)
+    ki = pref->GetDouble("Ki", 0)
+    kd = pref->GetDouble("Kd", 0)
+    
     distanceToGo = pref->GetDouble("distanceToGo", 0.0);
+    // reset the distance to go for the controller
     drive->resetEnc();
+    
+    // have to reset the intergral at the start of calling the controller
+    intergral = 0;
+    
+    // set original error to the first original error
+    lastError = drive->getRightEnc()
 }
+
+// block runs every 20ms
+const double T = .020;
 
 // Called repeatedly when this Command is scheduled to run
 void PositionStopController::Execute() {
-    drive->setRight(motorPower);
+    double error = distanceToGo - drive->getRightEnc();
+    
+    intergral += (error * T);
+    double derivative =
+    
+    double output = (error * kp) + (intergral * ki) + (derivative * kd);
+    drive->setRight(output);
+    lastError = error;
 }
 
 // Make this return true when this Command no longer needs to run execute()
 bool PositionStopController::IsFinished() {
     // stop once a certian amount of time has passed.
-    return drive->getRightEnc() >= distanceToGo;
+    return false; // only stop if forced to stop
 }
 
 // Called once after isFinished returns true

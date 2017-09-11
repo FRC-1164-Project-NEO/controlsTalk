@@ -2,16 +2,16 @@
 #include "Robot.h"
 
 
-PositionStopController::PositionStopController() {
+PositionStopController::PositionStopController(Drive *Drive) {
 	// Use Requires() here to declare subsystem dependencies
 	// eg. Requires(Robot::chassis.get());
-	Requires(Robot::drive.get());
+    drive = Drive;
 }
 
 // Called just before this Command runs the first time
 void PositionStopController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
-    motorPower = pref->GetDouble("posBasedSpeed", 0)
+    kp = pref->GetDouble("PKp", 0)
     
     // block runs every 20ms, 1/20ms = 50Hz
     distanceToGo = pref->GetDouble("distanceToGo", 0.0);
@@ -20,13 +20,15 @@ void PositionStopController::Initialize() {
 
 // Called repeatedly when this Command is scheduled to run
 void PositionStopController::Execute() {
-    drive->setRight(motorPower);
+    double error = distanceToGo - drive->getRightEnc();
+    
+    drive->setRight(error * kp);
 }
 
 // Make this return true when this Command no longer needs to run execute()
 bool PositionStopController::IsFinished() {
     // stop once a certian amount of time has passed.
-    return drive->getRightEnc() >= distanceToGo;
+    return false; // only stop if forced to stop
 }
 
 // Called once after isFinished returns true

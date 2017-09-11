@@ -17,6 +17,9 @@ void Robot::RobotInit() {
 
 	// init commands
 	frc::SmartDashboard::PutData("timeBasedController", new TimeBasedController(drive));
+    frc::SmartDashboard::PutData("PositionStopController", new PositionStopController(drive));
+    frc::SmartDashboard::PutData("PController", new PController(drive));
+    frc::SmartDashboard::PutData("PIDController", new PIDController(drive));
 }
 
 void Robot::RobotPeriodic() {
@@ -66,7 +69,7 @@ void Robot::TeleopPeriodic() {
 	// This is done because the smart dashboard only updates when a new value is given to it.
 	// Giving small varying number added to actual number.
 	double smallRandomNumber = (rand() % 500) / 4000.0;
-	double encoderValue = drive->getRight() + smallRandomNumber;
+	double encoderValue = drive->getRightEnc() + smallRandomNumber;
 	frc::SmartDashboard::PutNumber("EncoderPosition", encoderValue);
 }
 

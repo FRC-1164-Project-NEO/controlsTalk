@@ -35,7 +35,7 @@ bool TimeBasedController::IsFinished() {
 // Called once after isFinished returns true
 void TimeBasedController::End() {
     // stop the motor
-    Robot::drive->set(0,0);
+    drive->set(0,0);
 }
 
 // Called when another command which requires one or more of the same

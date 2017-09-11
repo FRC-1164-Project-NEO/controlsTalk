@@ -26,8 +26,6 @@ public:
 	Joystick *joystick;
 
 
-
-
 	void RobotInit();
 	void RobotPeriodic();
 	void AutonomousInit() override;
