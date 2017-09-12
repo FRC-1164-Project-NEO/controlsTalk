@@ -4,6 +4,9 @@
 #include "PositionStopController.h"
 #include "PController.h"
 #include "PIDController.h"
+#include "MotionProfilerPID.h"
+#include "ArmPIDController.h"
+#include "ArmLinearize.h"
 
 #include <cstdlib>
 #include <Preferences.h>
@@ -17,6 +20,7 @@ void Robot::RobotInit() {
 
 	// init sub-systems
 	drive = new Drive();
+	arm = new RollerArm();
 	joystick = new Joystick(0);
 
 
@@ -25,11 +29,23 @@ void Robot::RobotInit() {
     frc::SmartDashboard::PutData("PositionStopController", new PositionStopController(drive));
     frc::SmartDashboard::PutData("PController", new PController(drive));
     frc::SmartDashboard::PutData("PIDController", new PIDController(drive));
+    frc::SmartDashboard::PutData("MotionProfilePID", new MotionProfilerPID(drive));
+    frc::SmartDashboard::PutData("ArmPIDController", new ArmPIDController(arm));
+    frc::SmartDashboard::PutData("ArmLinearize", new ArmLinearize(arm));
 }
 
+// runs periodicly in every state
 void Robot::RobotPeriodic() {
 	if (joystick->GetRawButton(Preferences::GetInstance()->GetInt("EncResetButton",1))) {
 		drive->resetEnc();
+	}
+
+	frc::SmartDashboard::PutNumber("EncoderPositionActual", drive->getRightEnc());
+	frc::SmartDashboard::PutNumber("ArmPositionActual", arm->getEnc());
+	frc::SmartDashboard::PutNumber("ArmLimit", arm->getLimit());
+
+	if (arm->getLimit() == 0) {
+		arm->resetEnc();
 	}
 }
 
@@ -65,17 +81,25 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-
+	//frc::Command *command = new TimeBasedController(drive);
+	//command->Start();
 }
 
 void Robot::TeleopPeriodic() {
-	drive->set(-joystick->GetY(), -joystick->GetThrottle());
+	frc::Scheduler::GetInstance()->Run();
+
+	Preferences *pref = Preferences::GetInstance();
+	//drive->set(-joystick->GetY(), -joystick->GetThrottle());
+	//arm->set(-joystick->GetY());
+	//arm->set(pref->GetDouble("armPower", 0.0));
 
 	// This is done because the smart dashboard only updates when a new value is given to it.
 	// Giving small varying number added to actual number.
 	double smallRandomNumber = (rand() % 500) / 4000.0;
 	double encoderValue = drive->getRightEnc() + smallRandomNumber;
 	frc::SmartDashboard::PutNumber("EncoderPosition", encoderValue);
+
+	frc::SmartDashboard::PutNumber("ArmPosition", arm->getEnc() + smallRandomNumber);
 }
 
 void Robot::TestPeriodic() {

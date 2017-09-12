@@ -11,19 +11,18 @@
 // distanceToGo - distanceToGo
 
 
-#include "TimeBasedController.h"
+#include "PositionStopController.h"
+#include <Preferences.h>
 
 
-PositionStopController::PositionStopController() {
-	// Use Requires() here to declare subsystem dependencies
-	// eg. Requires(Robot::chassis.get());
-	Requires(Robot::drive.get());
+PositionStopController::PositionStopController(Drive *Drive) {
+	drive = Drive;
 }
 
 // Called just before this Command runs the first time
 void PositionStopController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
-    motorPower = pref->GetDouble("posBasedSpeed", 0)
+    motorPower = pref->GetDouble("posBasedSpeed", 0);
     
     // block runs every 20ms, 1/20ms = 50Hz
     distanceToGo = pref->GetDouble("distanceToGo", 0.0);

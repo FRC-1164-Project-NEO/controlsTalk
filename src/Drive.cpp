@@ -16,7 +16,7 @@ Drive::Drive() : Subsystem("Drive") {
 
 	rEnc = new Encoder(pref->GetInt("rightEncA", 0), pref->GetInt("rightEncB", 1));
     
-    countsPerDegree = pref->GetInt("encCountsPerRev", 1) * 360;
+    countsPerDegree = pref->GetInt("encCountsPerRev", 1) / 360;
 }
 
 

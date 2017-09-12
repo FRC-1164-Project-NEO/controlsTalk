@@ -6,6 +6,7 @@
 // PKp - is the kp constant in the preferecnes file.
 
 #include "PController.h"
+#include <Preferences.h>
 
 
 PController::PController(Drive *Drive) {
@@ -17,7 +18,7 @@ PController::PController(Drive *Drive) {
 // Called just before this Command runs the first time
 void PController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
-    kp = pref->GetDouble("PKp", 0)
+    kp = pref->GetDouble("PKp", 0);
     
     // block runs every 20ms, 1/20ms = 50Hz
     distanceToGo = pref->GetDouble("distanceToGo", 0.0);

@@ -43,41 +43,39 @@
 //
 // Also note in literature we have the PID controller in Ideal form, and not in standard form.
 
-#include "PIDController.h"
+#include "ArmPIDController.h"
 #include <Preferences.h>
 
 
-PIDController::PIDController(Drive *Drive) {
+ArmPIDController::ArmPIDController(RollerArm *Arm) {
 	// Find
-    drive = Drive;
+    arm = Arm;
 }
 
 // Called just before this Command runs the first time
-void PIDController::Initialize() {
+void ArmPIDController::Initialize() {
     Preferences *pref = Preferences::GetInstance();
     
     // Get the constants for the PID Controller
-    kp = pref->GetDouble("Kp", 0);
-    ki = pref->GetDouble("Ki", 0);
-    kd = pref->GetDouble("Kd", 0);
+    kp = pref->GetDouble("ArmKp", 0);
+    ki = pref->GetDouble("ArmKi", 0);
+    kd = pref->GetDouble("ArmKd", 0);
     
-    distanceToGo = pref->GetDouble("distanceToGo", 0.0);
-    // reset the distance to go for the controller
-    drive->resetEnc();
+    distanceToGo = pref->GetDouble("ArmControlLocation", 0.0);
     
     // have to reset the intergral at the start of calling the controller
     intergral = 0;
     
     // set original error to the first original error
-    lastError = drive->getRightEnc();
+    lastError = arm->getEnc();
 }
 
 // block runs every 20ms
 const double T = .020;
 
 // Called repeatedly when this Command is scheduled to run
-void PIDController::Execute() {
-    double error = distanceToGo - drive->getRightEnc();
+void ArmPIDController::Execute() {
+    double error = distanceToGo - arm->getEnc();
     
     // calculate the intergral using a rectangle method
     intergral += (error * T);
@@ -88,26 +86,26 @@ void PIDController::Execute() {
     
     // Calculate the PID output
     double output = (error * kp) + (intergral * ki) + (derivative * kd);
-    drive->setRight(output);
+    arm->set(output);
     
     // reset last error as the current error for the next iteration
     lastError = error;
 }
 
 // Make this return true when this Command no longer needs to run execute()
-bool PIDController::IsFinished() {
+bool ArmPIDController::IsFinished() {
     // stop once a certian amount of time has passed.
     return false; // only stop if forced to stop
 }
 
 // Called once after isFinished returns true
-void PIDController::End() {
+void ArmPIDController::End() {
     // stop the motor
-    drive->set(0,0);
+    arm->set(0);
 }
 
 // Called when another command which requires one or more of the same
 // subsystems is scheduled to run
-void PIDController::Interrupted() {
-	drive->set(0,0);
+void ArmPIDController::Interrupted() {
+	arm->set(0);
 }

@@ -7,17 +7,18 @@
 // rollerCountsPerDegree
 // rollerDegreeOffset
 
+#include "RollerArm.h"
 #include <Preferences.h>
 
 
-RollerArm::RollerArm() {
+RollerArm::RollerArm() : Subsystem("RollerArm") {
     Preferences *pref = Preferences::GetInstance();
     
-    motor = new CANTalon(pref->GetInt("rollerCANID", 1));
+    motor = new CANTalon(pref->GetInt("rollerCANID", 2));
     
     // set the talon to be controlled in throttle mode
     // Not PID or other control methods
-    motor->SetControlMode(CANTalon::kThrottleMode);
+    //motor->SetControlMode(CANTalon::kThrottleMode);
     
     countsPerDegree = pref->GetDouble("rollerCountsPerDegree", 1.0);
     degreeOffset = pref->GetDouble("rollerDegreeOffset", 0.0);
@@ -26,7 +27,16 @@ RollerArm::RollerArm() {
 // set - set the speed of the motor between [-1,1]
 // @param value - the motor speed to set between [-1,1]
 void RollerArm::set(double value) {
-    CANTalon->Set(value);
+	Preferences *pref = Preferences::GetInstance();
+	value = -value;
+
+	if (value > pref->GetDouble("armMaxUp", 0.01)) {
+		value = pref->GetDouble("armMaxUp", 0.01);
+	} else if (value > pref->GetDouble("armMaxDown", -0.01)) {
+		value = pref->GetDouble("armMaxDown", -0.01);
+	}
+
+    motor->Set(value);
 }
 
 // resetEnc - resets the current encoder value
@@ -40,6 +50,10 @@ double RollerArm::getEnc() {
     return (motor->GetEncPosition() / countsPerDegree) + degreeOffset;
 }
 
+int RollerArm::getLimit() {
+	return motor->GetPinStateQuadIdx();
+	//return motor->GetReverseLimitOK();
+}
 
 
 void RollerArm::InitDefaultCommand() {

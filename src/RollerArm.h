@@ -35,6 +35,8 @@ public:
     // @ return the encoder value in degrees.
     double getEnc();
 
+    int getLimit();
+
 	void InitDefaultCommand();
 };
 

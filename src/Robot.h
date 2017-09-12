@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Drive.h"
+#include "RollerArm.h"
 #include <Joystick.h>
 
 #include <IterativeRobot.h>
@@ -24,6 +25,8 @@ class Robot: public frc::IterativeRobot {
 public:
 	Drive *drive;
 	Joystick *joystick;
+	RollerArm *arm;
+
 
 
 	void RobotInit();

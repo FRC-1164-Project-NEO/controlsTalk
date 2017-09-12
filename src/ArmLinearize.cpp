@@ -43,41 +43,58 @@
 //
 // Also note in literature we have the PID controller in Ideal form, and not in standard form.
 
-#include "PIDController.h"
+#include "ArmLinearize.h"
 #include <Preferences.h>
 
+#include <cmath>
 
-PIDController::PIDController(Drive *Drive) {
+
+ArmLinearize::ArmLinearize(RollerArm *Arm) {
 	// Find
-    drive = Drive;
+    arm = Arm;
 }
 
 // Called just before this Command runs the first time
-void PIDController::Initialize() {
+void ArmLinearize::Initialize() {
     Preferences *pref = Preferences::GetInstance();
     
     // Get the constants for the PID Controller
-    kp = pref->GetDouble("Kp", 0);
-    ki = pref->GetDouble("Ki", 0);
-    kd = pref->GetDouble("Kd", 0);
+    kp = pref->GetDouble("ArmKp", 0);
+    ki = pref->GetDouble("ArmKi", 0);
+    kd = pref->GetDouble("ArmKd", 0);
     
-    distanceToGo = pref->GetDouble("distanceToGo", 0.0);
-    // reset the distance to go for the controller
-    drive->resetEnc();
+    distanceToGo = pref->GetDouble("ArmControlLocation", 0.0);
     
+    // delete old profiles if required
+	//if (profile != NULL) {
+	//	delete profile;
+	//}
+	initalPosition = arm->getEnc();
+
+	// create profile and set inital V = 0 and the distance to go
+	profile = new motionProfiler(pref->GetDouble("ArmAMax", 1), pref->GetDouble("ArmVMax", 1));
+	profile->setDistance(distanceToGo - initalPosition, 0);
+
+	// reset the iteration
+	curIteration = 0;
+
     // have to reset the intergral at the start of calling the controller
     intergral = 0;
     
     // set original error to the first original error
-    lastError = drive->getRightEnc();
+    lastError = arm->getEnc();
 }
 
 // block runs every 20ms
 const double T = .020;
 
 // Called repeatedly when this Command is scheduled to run
-void PIDController::Execute() {
-    double error = distanceToGo - drive->getRightEnc();
+void ArmLinearize::Execute() {
+	Preferences *pref = Preferences::GetInstance();
+	double setpoint = profile->getPosition(curIteration * T) + initalPosition;
+    double error = setpoint - arm->getEnc();
+
+    frc::SmartDashboard::PutNumber("ArmSetpoint", setpoint);
     
     // calculate the intergral using a rectangle method
     intergral += (error * T);
@@ -86,28 +103,34 @@ void PIDController::Execute() {
     // of last error method
     double derivative = (error - lastError) / T;
     
+    double cosTerm = cos((arm->getEnc() - pref->GetDouble("armPhaseShift", 2.0)) * (M_PI / 180.0)) *
+    		pref->GetDouble("Kcos", 0.01);
+
     // Calculate the PID output
-    double output = (error * kp) + (intergral * ki) + (derivative * kd);
-    drive->setRight(output);
+    double output = (error * kp) + (intergral * ki) + (derivative * kd) + cosTerm;
+    arm->set(output);
     
     // reset last error as the current error for the next iteration
     lastError = error;
+
+    // update iteration count.
+    curIteration++;
 }
 
 // Make this return true when this Command no longer needs to run execute()
-bool PIDController::IsFinished() {
+bool ArmLinearize::IsFinished() {
     // stop once a certian amount of time has passed.
     return false; // only stop if forced to stop
 }
 
 // Called once after isFinished returns true
-void PIDController::End() {
+void ArmLinearize::End() {
     // stop the motor
-    drive->set(0,0);
+    arm->set(0);
 }
 
 // Called when another command which requires one or more of the same
 // subsystems is scheduled to run
-void PIDController::Interrupted() {
-	drive->set(0,0);
+void ArmLinearize::Interrupted() {
+	arm->set(0);
 }
